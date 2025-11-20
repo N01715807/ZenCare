@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 
 async function bootstrap() {
   
-  // Load environment variables from .env file
+  // 从 .env 文件加载环境变量
   dotenv.config(); 
   console.log('API KEY =', process.env.OPENAI_API_KEY); 
 
