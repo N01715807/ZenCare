@@ -13,7 +13,7 @@ export class ConfigService {
    * 获取 STT（语音识别）模型名
    */
   getSttModel(): string {
-    return process.env.OPENAI_STT_MODEL || 'gpt-4o-mini-tts';
+    return process.env.OPENAI_STT_MODEL || 'gpt-4o-mini-transcribe';
   }
 
   /**

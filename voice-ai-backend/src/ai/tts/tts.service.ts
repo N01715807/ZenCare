@@ -1,22 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '../../config/config.service';
+import OpenAI from 'openai';
 
 @Injectable()
 export class TtsService {
-  constructor(private readonly config: ConfigService) {}
+  private readonly client: OpenAI;
 
-  /**
-   * 文本转语音（只定义接口，暂不实现）
-   *
-   * @param text  要读出来的内容
-   * @param voice 使用的音色标识（例如：synthex / mechaX / alloy 等）
-   * @returns     音频数据（Buffer），例如 mp3
-   *
-   * 现在只确定入参和出参，后面再接 OpenAI TTS。
-   */
+  constructor(private readonly config: ConfigService) {
+    const apiKey = this.config.getOpenAiKey();
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY 未配置');
+    }
+
+    this.client = new OpenAI({ apiKey });
+
+    console.log('【TTS】使用模型 =', this.config.getTtsModel());
+  }
+
   async synthesizeSpeech(text: string, voice: string): Promise<Buffer> {
-    // 这里只做接口设计，还没有真正调用 TTS 模型。
-    // 后面会在这里用 OpenAI TTS 把 text + voice 生成音频。
-    return Buffer.from('fake-audio'); // 占位，避免报错
+    if (!text || !text.trim()) {
+      throw new InternalServerErrorException('text 不能为空');
+    }
+    if (!voice || !voice.trim()) {
+      throw new InternalServerErrorException('voice 不能为空');
+    }
+
+    try {
+      const model = this.config.getTtsModel();
+
+      const response = await this.client.audio.speech.create({
+        model,
+        voice,
+        input: text,
+      });
+
+      const arrayBuffer = await response.arrayBuffer();
+      return Buffer.from(arrayBuffer);
+    } catch (err: any) {
+      console.error('【TTS】调用失败原始错误:');
+      if (err.error) {
+        console.error(JSON.stringify(err.error, null, 2));
+      } else if (err.response?.data) {
+        console.error(JSON.stringify(err.response.data, null, 2));
+      } else {
+        console.error(err);
+      }
+
+      throw new InternalServerErrorException('语音合成失败');
+    }
   }
 }

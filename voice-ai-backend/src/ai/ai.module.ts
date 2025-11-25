@@ -5,8 +5,9 @@ import { TtsService } from './tts/tts.service';
 import { ConfigModule } from '../config/config.module';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule],            // 给 STT/Chat/TTS 用配置
   providers: [SttService, ChatService, TtsService],
-  exports: [SttService, ChatService, TtsService],
+  exports: [SttService, ChatService, TtsService], // ⭐ 必须 export，VoiceModule 才能注入
 })
 export class AiModule {}
+

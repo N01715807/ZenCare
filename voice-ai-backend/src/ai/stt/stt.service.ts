@@ -1,19 +1,63 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '../../config/config.service';
+import OpenAI, { toFile } from 'openai';
 
+/**
+ * STT：语音转文字
+ */
 @Injectable()
 export class SttService {
-  constructor(private readonly config: ConfigService) {}
+  private readonly client: OpenAI;
+
+  constructor(private readonly config: ConfigService) {
+    const apiKey = this.config.getOpenAiKey();
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY 未配置');
+    }
+
+    this.client = new OpenAI({ apiKey });
+
+    console.log('【STT】使用模型 =', this.config.getSttModel());
+  }
 
   /**
-   * 语音转文字（只定义接口，暂不实现）
+   * 语音转文字
    *
-   * 现在只确定函数长什么样，后面再接 OpenAI。
-   * 输入：音频 Buffer
-   * 输出：识别出的文字（Promise<string>）
+   * @param audioBuffer 上传的音频 Buffer（webm/mp3/wav 都可以）
+   * @returns 识别出的文本
    */
   async transcribeAudio(audioBuffer: Buffer): Promise<string> {
-    // 这里只做接口设计，还没有真正调用 STT 模型。
-    return 'Fake text (not yet integrated with STT)';
+    if (!audioBuffer || audioBuffer.length === 0) {
+      throw new InternalServerErrorException('音频数据为空');
+    }
+
+    try {
+      // 用官方 SDK 提供的 toFile 把 Buffer 包装成 File 对象
+      // 你现在传的是 mp3，就写成 mp3，方便以后排查
+      const file = await toFile(audioBuffer, 'input.mp3');
+
+      const model = this.config.getSttModel();
+
+      const resp = await this.client.audio.transcriptions.create({
+        file,
+        model,
+        // language: 'zh', // 如果想强制按中文识别，可以打开
+      });
+
+      // 返回识别文本
+      return resp.text || '';
+    } catch (err: any) {
+      console.error('【STT】调用失败原始错误:');
+      // OpenAI 新版 SDK 一般把详细信息放在 error / response.data 里
+      if (err.error) {
+        console.error(JSON.stringify(err.error, null, 2));
+      } else if (err.response?.data) {
+        console.error(JSON.stringify(err.response.data, null, 2));
+      } else {
+        console.error(err);
+      }
+
+      throw new InternalServerErrorException('语音识别失败');
+    }
   }
 }
