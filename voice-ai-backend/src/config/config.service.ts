@@ -34,6 +34,10 @@ export class ConfigService {
    * 支持的 voice 列表
    */
   getSupportedVoices(): string[] {
-    return ['synthex', 'mechaX', 'ioncore']; // 你可以后改
+    return ['alloy', 'verse', 'ace']; // 你可以后改
+  }
+
+  isSupportedVoice(voice: string): boolean {
+    return this.getSupportedVoices().includes(voice);
   }
 }

@@ -64,15 +64,20 @@ export class ChatService {
 
       return replyText;
     } catch (err: any) {
-      console.error('【Chat】调用失败原始错误:');
-      if (err.error) {
-        console.error(JSON.stringify(err.error, null, 2));
-      } else if (err.response?.data) {
-        console.error(JSON.stringify(err.response.data, null, 2));
-      } else {
-        console.error(err);
+      console.error('【Chat】raw error:', err);
+      
+      const code =
+      err?.error?.code ||
+      err?.response?.data?.code ||
+      err?.code;
+      
+      if (code === 'insufficient_quota') {
+        throw new InternalServerErrorException(
+          'Chat quota exceeded. Please check your OpenAI billing.',
+        );
       }
-      throw new InternalServerErrorException('聊天生成失败');
+      
+      throw new InternalServerErrorException('Chat generation failed.');
     }
   }
 }

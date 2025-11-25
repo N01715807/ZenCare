@@ -47,17 +47,20 @@ export class SttService {
       // 返回识别文本
       return resp.text || '';
     } catch (err: any) {
-      console.error('【STT】调用失败原始错误:');
-      // OpenAI 新版 SDK 一般把详细信息放在 error / response.data 里
-      if (err.error) {
-        console.error(JSON.stringify(err.error, null, 2));
-      } else if (err.response?.data) {
-        console.error(JSON.stringify(err.response.data, null, 2));
-      } else {
-        console.error(err);
+      console.error('【STT】raw error:', err);
+      
+      const code =
+      err?.error?.code ||
+      err?.response?.data?.code ||
+      err?.code;
+      
+      if (code === 'insufficient_quota') {
+        throw new InternalServerErrorException(
+          'STT quota exceeded. Please check your OpenAI billing.',
+        );
       }
-
-      throw new InternalServerErrorException('语音识别失败');
+      
+      throw new InternalServerErrorException('Speech-to-text failed.');
     }
   }
 }
