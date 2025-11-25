@@ -34,7 +34,7 @@ export class SttService {
     try {
       // 用官方 SDK 提供的 toFile 把 Buffer 包装成 File 对象
       // 你现在传的是 mp3，就写成 mp3，方便以后排查
-      const file = await toFile(audioBuffer, 'input.mp3');
+      const file = await toFile(audioBuffer, 'input.webm');
 
       const model = this.config.getSttModel();
 

@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "multer": "^2.0.2",
+    "openai": "^6.9.1"
+  },
+  "devDependencies": {
+    "@types/multer": "^2.0.0"
+  }
+}
