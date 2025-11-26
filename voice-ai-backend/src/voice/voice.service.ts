@@ -115,6 +115,8 @@ export class VoiceService {
     userText: string;
     replyText: string;
     audioBase64: string;
+    shouldNavigate?: boolean;
+    targetPage?: string | null;
   }> {
     const { audioBuffer, voice, profileText } = params;
     let { sessionId } = params;
@@ -189,11 +191,37 @@ export class VoiceService {
     const totalCost = Date.now() - overallStart;
     const audioBase64 = ttsBuffer.toString('base64');
 
+    // ---------- Navigation intent detection ----------
+    let shouldNavigate = false;
+    let targetPage: string | null = null;
+
+    const lower = (userText || '').toLowerCase();
+    const clean = lower.replace(/[.,!?]/g, ' ');
+
+    // Example: user says "talk with Anna"
+    const goCallAnna =
+     clean.includes('call anna') ||
+     clean.includes('talk to anna') ||
+     clean.includes('talk with anna') ||
+     (clean.includes('anna') &&
+       (clean.includes('call') || clean.includes('talk')));
+    if (goCallAnna) {
+      shouldNavigate = true;
+      targetPage = 'call';
+    }
+
+    // 你可以继续扩展其他规则，比如：
+    // if (lower.includes('add task') || lower.includes('new task')) {
+    //   shouldNavigate = true;
+    //   targetPage = 'add-task';
+    // }
+
     // ---------- log summary ----------
     this.logger.log(
       `session=${sessionId} voice=${voice} firstTurn=${isFirstTurn} ` +
         `models: STT=${sttModel}, Chat=${chatModel}, TTS=${ttsModel} ` +
-        `timing(ms): STT=${sttCost}, Chat=${chatCost}, TTS=${ttsCost}, Total=${totalCost}`,
+        `timing(ms): STT=${sttCost}, Chat=${chatCost}, TTS=${ttsCost}, Total=${totalCost} ` +
+        `navigate=${shouldNavigate} target=${targetPage}`,
     );
 
     return {
@@ -201,6 +229,8 @@ export class VoiceService {
       userText,
       replyText,
       audioBase64,
+      shouldNavigate,
+      targetPage,
     };
   }
 }

@@ -11,4 +11,11 @@ export class VoiceChatResponseDto {
 
   // TTS 生成的音频（base64 编码）
   audioBase64: string;
+
+  // ---- new fields for navigation ----
+  // Whether frontend should navigate to another page
+  shouldNavigate?: boolean;
+
+  // The target page key, e.g. "call-nadiya"
+  targetPage?: string | null;
 }

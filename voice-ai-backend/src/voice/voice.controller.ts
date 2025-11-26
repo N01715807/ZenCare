@@ -141,7 +141,7 @@ export class VoiceController {
    *   sessionId?: string
    *   profile?: string(JSON)
    */
-  @Post('chat')
+    @Post('chat')
   @UseInterceptors(
     FileInterceptor('audio', {
       storage: multer.memoryStorage(),
