@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>User Profile</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 0 16px;
+        line-height: 1.6;
+      }
+      h1 {
+        font-size: 24px;
+        margin-bottom: 16px;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        max-width: 320px;
+        padding: 6px 8px;
+        margin-top: 4px;
+        font-size: 14px;
+      }
+      button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .hint {
+        font-size: 13px;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Set Up Your Profile</h1>
+
+    <form id="profileForm">
+      <label>
+        Name
+        <input type="text" id="name" required />
+      </label>
+
+      <label>
+        Preferred Name
+        <input type="text" id="preferredName" placeholder="How AI should call you" />
+      </label>
+
+      <label>
+        Age
+        <input type="number" id="age" min="0" />
+      </label>
+
+      <label>
+        Health Condition
+        <input
+          type="text"
+          id="health"
+          placeholder="e.g. normal / high blood pressure / diabetes"
+        />
+        <div class="hint">
+        </div>
+      </label>
+
+      <button type="submit">Start Voice Chat</button>
+    </form>
+
+    <script>
+      const form = document.getElementById('profileForm');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const profile = {
+          name: document.getElementById('name').value.trim(),
+          preferredName: document
+            .getElementById('preferredName')
+            .value.trim(),
+          age: document.getElementById('age').value.trim(),
+          health: document.getElementById('health').value.trim(),
+        };
+
+        // 生成一个 sessionId
+        const sessionId = 'sess-' + Date.now();
+
+        // 存到 sessionStorage，语音页面会读
+        sessionStorage.setItem('voice_profile', JSON.stringify(profile));
+        sessionStorage.setItem('voice_sessionId', sessionId);
+
+        // 跳转到你现在的语音聊天页面
+        // 👉 如果你当前这个页面文件名是 index.html，就写 'index.html'
+        // 👉 如果你叫 voice.html，就改成 'voice.html'
+        window.location.href = 'voice-select.html';
+      });
+    </script>
+  </body>
+</html>

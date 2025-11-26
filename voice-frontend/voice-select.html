@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Select Voice</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 0 16px;
+        line-height: 1.6;
+      }
+      h1 {
+        font-size: 24px;
+        margin-bottom: 16px;
+      }
+      .user-info {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 12px;
+      }
+      .voice-option {
+        margin: 8px 0;
+      }
+      button {
+        padding: 8px 16px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .submit-btn {
+        margin-top: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Select Your Voice</h1>
+
+    <div id="userInfo" class="user-info"></div>
+
+    <form id="voiceForm">
+      <div class="voice-option">
+        <label>
+          <input type="radio" name="voice" value="alloy" checked />
+          CalmDoc
+        </label>
+        <button type="button" onclick="previewVoice('alloy')">Preview</button>
+      </div>
+
+      <div class="voice-option">
+        <label>
+          <input type="radio" name="voice" value="verse" />
+          WarmBuddy
+        </label>
+        <button type="button" onclick="previewVoice('verse')">Preview</button>
+      </div>
+
+      <div class="voice-option">
+        <label>
+          <input type="radio" name="voice" value="nova" />
+          EnerCoach
+        </label>
+        <button type="button" onclick="previewVoice('nova')">Preview</button>
+      </div>
+
+      <div class="voice-option">
+        <label>
+          <input type="radio" name="voice" value="echo" />
+          SoftGuide
+        </label>
+        <button type="button" onclick="previewVoice('echo')">Preview</button>
+      </div>
+
+      <div class="voice-option">
+        <label>
+          <input type="radio" name="voice" value="onyx" />
+          DeepAnchor
+        </label>
+        <button type="button" onclick="previewVoice('onyx')">Preview</button>
+      </div>
+
+      <button type="submit" class="submit-btn">Continue to Voice Chat</button>
+    </form>
+
+    <script>
+      const rawProfile = sessionStorage.getItem('voice_profile');
+      const sessionId = sessionStorage.getItem('voice_sessionId');
+
+      // If there is no profile/session, go back to profile page
+      if (!rawProfile || !sessionId) {
+        window.location.href = 'profile.html';
+      }
+
+      const profile = JSON.parse(rawProfile);
+      const userInfoEl = document.getElementById('userInfo');
+      userInfoEl.textContent =
+        'User: ' +
+        (profile.preferredName || profile.name || 'Unknown user') +
+        '  |  Session: ' +
+        sessionId;
+
+      const form = document.getElementById('voiceForm');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const selected = document.querySelector(
+          'input[name="voice"]:checked',
+        );
+        const voice = selected ? selected.value : 'alloy';
+
+        // Save voice for index.html / main.js
+        sessionStorage.setItem('voice_selected', voice);
+
+        // Go to voice chat page (index.html)
+        window.location.href = 'index.html';
+      });
+
+      // Open a new preview page with the selected voice and user name
+      function previewVoice(voice) {
+        let name = 'you';
+        try {
+          if (profile) {
+            name = encodeURIComponent(
+              profile.preferredName || profile.name || 'you',
+            );
+          }
+        } catch (e) {
+          // fallback
+          name = 'you';
+        }
+
+        window.open(`preview.html?voice=${voice}&name=${name}`, '_blank');
+      }
+
+      // expose to inline onclick
+      window.previewVoice = previewVoice;
+    </script>
+  </body>
+</html>

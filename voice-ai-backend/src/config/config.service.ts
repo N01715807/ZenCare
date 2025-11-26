@@ -34,7 +34,7 @@ export class ConfigService {
    * 支持的 voice 列表
    */
   getSupportedVoices(): string[] {
-    return ['alloy', 'verse', 'ace']; // 你可以后改
+    return ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer','coral', 'verse', 'ballad', 'ash', 'sage', 'marin', 'cedar']; // 你可以后改
   }
 
   isSupportedVoice(voice: string): boolean {

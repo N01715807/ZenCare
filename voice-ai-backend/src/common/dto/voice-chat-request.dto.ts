@@ -6,4 +6,6 @@ export class VoiceChatRequestDto {
 
   // 会话 ID，可选。前端不传就由后端生成一个。
   sessionId?: string;
+
+  profile?: string; 
 }
