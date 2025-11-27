@@ -199,12 +199,7 @@ export class VoiceService {
     const clean = lower.replace(/[.,!?]/g, ' ');
 
     // Example: user says "talk with Anna"
-    const goCallAnna =
-     clean.includes('call anna') ||
-     clean.includes('talk to anna') ||
-     clean.includes('talk with anna') ||
-     (clean.includes('anna') &&
-       (clean.includes('call') || clean.includes('talk')));
+    const goCallAnna = clean.includes('anna');
     if (goCallAnna) {
       shouldNavigate = true;
       targetPage = 'call';

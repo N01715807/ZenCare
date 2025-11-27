@@ -72,7 +72,7 @@ export class VoiceController {
     }
 
     const displayName = name || 'friend';
-    const sampleText = `Did you miss me, ${displayName}?`;
+    const sampleText = `hi, ${displayName} l am here to help you with whatever you need?`;
 
     const buf = await this.ttsService.synthesizeSpeech(sampleText, voice);
     return { audioBase64: buf.toString('base64') };

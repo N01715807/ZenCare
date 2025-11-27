@@ -86,7 +86,7 @@ async function greet() {
 }
 
 // ======================
-// 🎤 录音逻辑（和你原来基本一样）
+// 🎤 录音逻辑
 // ======================
 
 recordBtn.addEventListener('click', async () => {
@@ -176,7 +176,7 @@ async function sendToBackend(blob) {
     }
 
     const data = await res.json();
-    // data = { sessionId, userText, replyText, audioBase64 }
+    // data = { sessionId, userText, replyText, audioBase64, shouldNavigate?, targetPage? }
 
     sessionId = data.sessionId;
     sessionInfoEl.textContent = sessionId ? `sessionId: ${sessionId}` : '';
@@ -193,6 +193,24 @@ async function sendToBackend(blob) {
       audioPlayer.play().catch((e) => {
         console.warn('Autoplay failed. User interaction required:', e);
       });
+    }
+
+    // ⭐⭐ 导航逻辑：后端说要跳，就跳 ⭐⭐
+    if (data.shouldNavigate) {
+      console.log('Navigation requested:', data.targetPage);
+
+      // 简单示例：说了 "talk with Anna" → targetPage = 'call-nadiya'
+      if (data.targetPage === 'call') {
+        window.location.href = 'call.html';
+      }
+
+      // 将来你可以继续加：
+      // if (data.targetPage === 'add-task') {
+      //   window.location.href = 'task.html';
+      // }
+      // if (data.targetPage === 'settings') {
+      //   window.location.href = 'settings.html';
+      // }
     }
 
     statusText.textContent = 'Done. You can record again.';
