@@ -7,6 +7,7 @@ import { SttService } from '../ai/stt/stt.service';
 import { ChatService } from '../ai/chat/chat.service';
 import { TtsService } from '../ai/tts/tts.service';
 import { ConfigService } from '../config/config.service';
+import { shouldGoCallNova } from '../utils/nova.util'
 
 @Injectable()
 export class VoiceService {
@@ -199,7 +200,7 @@ export class VoiceService {
     const clean = lower.replace(/[.,!?]/g, ' ');
 
     // Example: user says "talk with Anna"
-    const goCallAnna = clean.includes('anna');
+    const goCallAnna = shouldGoCallNova(clean);
     if (goCallAnna) {
       shouldNavigate = true;
       targetPage = 'call';
